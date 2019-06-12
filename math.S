@@ -11,6 +11,8 @@
 .global cosarg
 .global ambient
 .global mask
+.global magnitude
+.global twos
 .data
     .align 32
     pi: .double 3.141592658979
@@ -29,10 +31,6 @@
 .bss
 .text
 crossproduct://points packed in ymm0, ymm1
-    vsubpd %ymm0, %ymm1, %ymm1//do cross product, find normal vector
-    vsubpd %ymm0, %ymm2, %ymm2
-    vmovupd %ymm1, %ymm0      //something
-    vmovupd %ymm2, %ymm1      //a2*b3-a3*b2,a3*b1-a1*b3,a1*b2-a2*b
     vpermq $0b11001001, %ymm0, %ymm2
     vpermq $0b11010010, %ymm1, %ymm3
     vmulpd %ymm2, %ymm3, %ymm2
@@ -93,24 +91,6 @@ cos2:
     cmp $0,%rdi
     cmovl %rax, %rdi
     vmovsd (%rsi,%rdi,8),%xmm0
-    ret
-exponent://take xmm0 to the power of xmm1
-    sub $8, %rsp
-    vmovsd %xmm1, (%rsp)
-    fldl (%rsp)
-    vmovsd %xmm0, (%rsp)
-    fldl (%rsp)
-    fyl2x
-    fld1
-    fld %st(1)
-    fprem
-    f2xm1
-    faddp
-    fscale
-    fstpl (%rsp)
-    vmovsd (%rsp), %xmm0
-    add $8, %rsp
-    fstp %st(0)
     ret
 .macro broadcastdotproduct arg1, arg2, result
     sub $64, %rsp

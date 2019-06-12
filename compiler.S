@@ -77,19 +77,12 @@
     cspeek
     mov trim(%rip), %rsi
     call multiplymatrix
-    call drawtris
-    mov trim(%rip), %rdi
-    movq $0, 24(%rdi)
 .endm
 .macro applyedges//Same as above function but for edge matrices
     cspeek
     mov edgem(%rip), %rsi
     call multiplymatrix
     mov edgem(%rip), %rdi
-    mov $0xffffff, %rsi
-    call drawedges
-    mov edgem(%rip), %rdi
-    movq $0, 24(%rdi)
 .endm
 .text
 .macro nthpass n
@@ -327,6 +320,9 @@ handleop://raxth element of symtab
 .endm
     .save:
     nthpass 2
+    push %rdi
+    call calc_rays
+    pop %rdi
     mov $57, %rax
     syscall
     test %rax, %rax
@@ -375,6 +371,7 @@ handleop://raxth element of symtab
     ret
     .display:
     nthpass 2
+    call calc_rays
     lea name(%rip), %rdi
     call pr
     mov $57, %rax
@@ -517,6 +514,7 @@ set_value://rdi symtab* p , xmm0 double value
     movsd %xmm0, 16(%rdi)
     ret
 saveit:
+    call calc_rays
     lea basename(%rip), %rdi
     call pr
     ret

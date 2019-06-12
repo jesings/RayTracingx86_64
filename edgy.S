@@ -1,6 +1,5 @@
 .global addpoint
 .global addedge
-.global drawedges
 .text
 addpoint:
     // %rdi is matrix, x0:%xmm0, y0:%xmm1, z0:%xmm2, this function adds a point x,y,z,1 to a matrix
@@ -43,40 +42,4 @@ addedge:
     movsd %xmm4, %xmm1
     movsd %xmm5, %xmm2
     call addpoint
-    ret
-
-drawedges:
-    //matrix is in %rdi, color is in %rsi, this function calls the bresenham routine to draw a line for each edge in the edge matrix
-    push %r15
-    push %r14
-    xor %r15, %r15
-    mov %rsi, %r14
-    xor %rax, %rax
-    drawloop:
-    //find memory location, populate proper arguments
-    mov %rdi,matrixstart(%rip)
-    mov (%rdi),%r8
-    mov %r14, %rdi
-    movsd (%r8,%rax), %xmm0
-    cvtsd2si %xmm0, %rsi
-    movsd 8(%r8,%rax), %xmm0
-    cvtsd2si %xmm0, %rdx
-    movsd 32(%r8,%rax), %xmm0
-    cvtsd2si %xmm0, %rcx
-    movsd 40(%r8,%rax), %xmm0
-    mov %r8, %r9
-    cvtsd2si %xmm0, %r8
-    movsd 16(%r9,%rax), %xmm0
-    movsd 48(%r9,%rax), %xmm1
-    push %rax
-    call bresenham
-    pop %rax
-    //loop stuff
-    add $64, %rax
-    add $2, %r15
-    mov matrixstart(%rip), %rdi
-    cmp 24(%rdi),%r15
-    jl drawloop
-    pop %r14
-    pop %r15
     ret

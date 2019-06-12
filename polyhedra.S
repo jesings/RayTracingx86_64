@@ -1,7 +1,7 @@
 .global makebox
 .global makesphere
 .global maketorus
-.set resolution,512
+.set resolution,4
 .set rresolution,resolution*resolution
 .set rresolution2,rresolution*2
 .data

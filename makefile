@@ -1,9 +1,12 @@
 executable = 3d
-allfiles=matrix.o draw.o edgy.o prgrid.o bresenham.o manipulations.o parametric.o polygon.o polyhedra.o math.o stack.o sintable.o compiler.o lex.yy.c y.tab.c
-all: $(allfiles)
-	gcc -o $(executable) $(allfiles)
+allfiles=matrix.o draw.o edgy.o prgrid.o manipulations.o parametric.o polygon.o polyhedra.o math.o stack.o sintable.o compiler.o lex.yy.c y.tab.c trace.o
+
+all: compile
 	./$(executable) main.mdl
 	-rm *.ppm 2> /dev/null
+
+compile: clean $(allfiles)
+	gcc -o $(executable) $(allfiles)
 
 lex.yy.c: mdl.l y.tab.h 
 	flex -Id mdl.l
@@ -18,8 +21,6 @@ matrix.o: matrix.S
 	gcc -c -g matrix.S
 edgy.o: edgy.S
 	gcc -c -g edgy.S
-bresenham.o: bresenham.S
-	gcc -c -g bresenham.S
 prgrid.o: prgrid.S
 	gcc -c -g prgrid.S
 manipulations.o:manipulations.S
@@ -38,6 +39,8 @@ sintable.o: sintable.S
 	gcc -c -g sintable.S
 compiler.o: compiler.S
 	gcc -c -g compiler.S
+trace.o: trace.S
+	gcc -c -g trace.S
 clean:
 	-rm *.png *.gif *.jpg *.ppm 2> /dev/null
 	-rm y.tab.c y.tab.h 2> /dev/null
@@ -46,3 +49,5 @@ clean:
 	-rm y.dot 2> /dev/null
 	-rm *.o 2> /dev/null
 	-rm $(executable) 2> /dev/null
+cleangif:
+	-rm *.gif 2> /dev/null

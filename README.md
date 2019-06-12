@@ -10,7 +10,7 @@ Ray Tracing --> Starting out super basic, just triangle plane intersection, usin
 
 Stretch goals:
 
-Shadow ray handling--> This one I'm likely to do byt I'm not sure how difficult base ray tracing will be without shadow rays, so I'm tentatively putting this in the stretch goal section
+Refracted ray handling--> This one I'm likely to do byt I'm not sure how difficult base ray tracing will be without refracted rays, so I'm tentatively putting this in the stretch goal section
 
 Other shape intersections (i.e. sphere/torus intersections for ray tracing to eliminate the need to break them down into triangles)
 
