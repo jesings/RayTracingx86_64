@@ -1,49 +1,35 @@
 basename sanic
-frames 100
+frames 50
 constants shiny_purple 0.3 0.2 0.2 0.3 0 1 0.3 0.2 .2
 constants shiny_red 0.3 0.2 0.2 0.1 0 .8 0.1 0.2 .8
 constants shiny_blue 0.1 0.2 0.8 0.1 0 1 0.3 0.2 .2
 constants shiny_teal 0.3 0.0 1 0.3 0.2 .2 0.3 0.2 .2
 constants dull_yellow 0.3 0.8 .8 0.3 0.8 .8 0 0 1
+constants white 0.3 0.1 .5 0.3 0.1 .5 0.3 .1 .5
 push
 move 256 256 0
 push
 move 150 0 0
-rotate y 360 spinno
+rotate y -20
+rotate y 40 spinno
 rotate z 90
+scale 1 1 1 coino
 torus dull_yellow 0 0 0 20 100
 pop
+move 200 0 0 moveo
 sphere shiny_yellow -70 140 30 10
 sphere shiny_yellow -70 140 -30 10
 sphere shiny_blue -100 120 0 50
 push
 scale 1 2 1
-sphere shiny_red -100 0 0 50
+sphere shiny_blue -100 0 0 50
 pop
-push
-move -65 10 30
-//rotate z -60 spinno
-scale 4 1 1
-//sphere shiny_blue 0 0 0 20
-pop
-push
-move -65 10 -30
-//rotate z 30 spinno
-scale 1 4 1
-//sphere shiny_blue 0 0 0 20
-pop
-push
-move -90 -120 30
-//rotate z -60 spinno
-scale 4 1 1
-//sphere shiny_blue 0 0 0 20
-pop
-push
-move -90 -120 -30
-scale 1 4 1
-move 0 70 0
-rotate z 90 spinno
-sphere shiny_blue 0 -70 0 20
-pop
+sphere shiny_red -100 -90 20 20
+sphere shiny_red -100 -90 -20 20
+sphere white -75 20 30 20
+sphere white -75 20 -30 20
 vary spinno 0 24 0 1
 vary spinno 25 49 1 0
+vary moveo 0 49 0 1
+vary coino 0 44 1 1
+vary coino 45 49 1 0

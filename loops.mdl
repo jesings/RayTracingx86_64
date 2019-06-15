@@ -1,0 +1,6 @@
+push
+move 256 256 0
+rotate y 120
+rotate z 60
+torus 0 0 0 75 125
+display

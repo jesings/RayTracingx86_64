@@ -1,0 +1,10 @@
+constants emerald 0 .3 .9 .03 .4 .9 0 .3 0
+constants white .1 .5 0 .1 .5 0 .1 .5 0
+constants obsidian 0.05375 .7 0 0.18275 .7 0 0.332741 .7 0
+push
+move 256 256 0
+rotate x 40
+rotate y 40
+sphere obsidian 0 100 0 50
+sphere obsidian 0 -100 0 50
+display

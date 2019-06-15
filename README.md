@@ -4,9 +4,9 @@ Team Name: Assemblray
 
 ## Computer Graphics Final Project
 
-Initial goal:
+What I did:
 
-Ray Tracing --> Starting out super basic, just triangle plane intersection, using Phong reflection to handle different kinds of light, potentially switching over to Blinn-Phong, the base version will be significantly optimized, as is borderline-necessary for applications like these.
+Ray Tracing --> triangle ray intersection
 
 Added semi-functional shadow rays
 
