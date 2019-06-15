@@ -5,8 +5,11 @@ all: compile
 	./$(executable) main.mdl
 	-rm *.ppm 2> /dev/null
 
+oops: compile
+	./$(executable) oops.mdl
+
 compile: clean $(allfiles)
-	gcc -o $(executable) $(allfiles)
+	gcc -o $(executable) $(allfiles) -g
 
 lex.yy.c: mdl.l y.tab.h 
 	flex -Id mdl.l

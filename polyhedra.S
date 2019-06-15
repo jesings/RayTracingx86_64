@@ -1,7 +1,7 @@
 .global makebox
 .global makesphere
 .global maketorus
-.set resolution,4
+.set resolution,8
 .set rresolution,resolution*resolution
 .set rresolution2,rresolution*2
 .data
@@ -331,6 +331,18 @@ maketorus://matrix-ifies the tris for a torus
     pop %r15
     ret
 makesphere://matrix-ifies the tris for a sphere
+    jmp parameterize
+    lea scalefactor(%rip), %r8
+    movsd (%r8), %xmm5
+    movsd 8(%r8), %xmm6
+    movsd 16(%r8), %xmm7
+    vcomisd %xmm5, %xmm6
+    jne parameterize
+    vcomisd %xmm7, %xmm6
+    jne parameterize
+    call addsphere
+    ret
+    parameterize:
     mov %rdi, %r15
     push %r15
     call gensphere
@@ -352,4 +364,4 @@ makesphere://matrix-ifies the tris for a sphere
     mov %rax, %rdi
     call free@PLT
     pop %r15
-ret
+    ret

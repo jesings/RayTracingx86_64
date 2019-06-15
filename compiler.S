@@ -73,17 +73,6 @@
     mov cstop(%rip), %rdi
     mov (%rdi), %rdi
 .endm
-.macro applytris//Applies the current top of the coordinate system to the triangle matrix
-    cspeek
-    mov trim(%rip), %rsi
-    call multiplymatrix
-.endm
-.macro applyedges//Same as above function but for edge matrices
-    cspeek
-    mov edgem(%rip), %rsi
-    call multiplymatrix
-    mov edgem(%rip), %rdi
-.endm
 .text
 .macro nthpass n
     cmp $\n, %rdx
@@ -127,9 +116,7 @@ handleop://raxth element of symtab
     vmovsd 24(%rdi), %xmm1
     vmovsd 32(%rdi), %xmm2//skip to radius
     vmovsd 48(%rdi), %xmm3
-    mov edgem(%rip), %rdi
     call makesphere
-    applytris
     ret
     .torus:
     nthpass 2
@@ -139,9 +126,7 @@ handleop://raxth element of symtab
     vmovsd 32(%rdi), %xmm2//skip to radii
     vmovsd 48(%rdi), %xmm3
     vmovsd 56(%rdi), %xmm4
-    mov edgem(%rip), %rdi
     call maketorus
-    applytris
     ret
     .box:
     nthpass 2
@@ -152,9 +137,7 @@ handleop://raxth element of symtab
     vmovsd 48(%rdi), %xmm3
     vmovsd 56(%rdi), %xmm4
     vmovsd 64(%rdi), %xmm5
-    mov edgem(%rip), %rdi
     call makebox
-    applytris
     ret
     .lineval://also allow constants
     nthpass 2
@@ -169,7 +152,6 @@ handleop://raxth element of symtab
     mov edgem(%rip), %rdi
     call addedge
     pop %rdi//use cs pointed to in struct
-    applyedges
     ret
     .csval:
     ret
@@ -418,22 +400,20 @@ constantine:
     vmovupd mask(%rip), %ymm2
     vgatherqpd %ymm2, 8(%rsi,%ymm1,8), %ymm0
     vandpd mask(%rip), %ymm0, %ymm0
-    vmovupd %ymm0, Kd(%rip)
+    vmovupd %ymm0, reflectivity(%rip)
 
     vmovupd mask(%rip), %ymm2
     vgatherqpd %ymm2, 16(%rsi,%ymm1,8), %ymm0
     vandpd mask(%rip), %ymm0, %ymm0
-    vmovupd %ymm0, Ks(%rip)
+    vmovupd %ymm0, refractivity(%rip)
 
     pop %rdi
     ret
     noconstant:
     vmovupd Kad(%rip), %ymm0
     vmovupd %ymm0, Ka(%rip)
-    vmovupd Kdd(%rip), %ymm0
-    vmovupd %ymm0, Kd(%rip)
-    vmovupd Ksd(%rip), %ymm0
-    vmovupd %ymm0, Ks(%rip)
+    vmovupd reflectivity(%rip), %ymm0
+    vmovupd %ymm0, reflectivityd(%rip)
     pop %rdi
     ret
 setknobs: //frame num in rcx

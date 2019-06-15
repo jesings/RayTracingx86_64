@@ -43,7 +43,7 @@ makematrix://makes a matrix with %rdi columns and %rsi rows, and returns its ref
     //columns put on the stack
     push %rdi//number of columns
     push %rsi
-    movq $32, %rdi
+    movq $40, %rdi
     call malloc@PLT
     pop %rsi
     pop %rdi
@@ -52,7 +52,7 @@ makematrix://makes a matrix with %rdi columns and %rsi rows, and returns its ref
     push %rdi
     push %rsi
     imul %rsi, %rdi
-    shl $3, %rdi//length of array in bytes
+    sal $3, %rdi//length of array in bytes
     call malloc@PLT
     pop %rsi
     pop %rdi
@@ -61,9 +61,16 @@ makematrix://makes a matrix with %rdi columns and %rsi rows, and returns its ref
     movq %rax, (%rcx)
     movq %rdi, 8(%rcx)
     movq %rsi, 16(%rcx)
+
+    push %rcx
     movq $0, 24(%rcx)
+    push %rcx
+    sal $5, %rdi//number of bytes for constant
+    call malloc@PLT
+    pop %rdi
+    mov %rax, 32(%rdi)
     //sets return value
-    movq matrixstart(%rip), %rax
+    pop %rax
     ret
 
 resizematrix://adds %rsi columns to matrix %rdi, no return val
@@ -72,39 +79,57 @@ resizematrix://adds %rsi columns to matrix %rdi, no return val
     addq %rsi, %rdx
     movq %rdx, 8(%rdi)
     movq %rdx, %rsi
+    push %rsi
+    push %rdi
     shlq $5, %rsi
     movq (%rdi), %rdi
     call realloc@PLT
     movq matrixstart(%rip), %rdi
     movq %rax, (%rdi)
+    pop %rdi
+    pop %rsi
+    sal $3, %rsi
+    movq 32(%rdi), %rdi
+    call realloc@PLT
+    movq matrixstart(%rip), %rdi
+    movq %rax, 32(%rdi)
     ret
 
 copymatrix://makes a deepcopy of matrix %rdi, returns the pointer to that new matrix
-    mov %rdi, matrixstart(%rip)
     push %rdi
     mov 8(%rdi), %rdi
     mov $4, %rsi
     call makematrix
-    pop %rbx
+    pop %r8
     push %rax
+    mov %rax, matrixstart(%rip)
     //new matrix made, copy fields of pseudo-struct, find array addresses, and memcpy
     movq (%rax), %rdi
-    movq (%rbx), %rsi
-    movq 8(%rbx), %rdx
-    imul 16(%rbx), %rdx
+    movq (%r8), %rsi
+    movq 8(%r8), %rdx
+    imul 16(%r8), %rdx
     shl $3, %rdx
-    push %rdi
+    push %r8
     call memcpy@PLT
-    pop %rdi
+    pop %r8
     pop %rax
-    mov 24(%rdi), %rdx
-    mov %rdx, 24(%rax)
+    mov 24(%r8), %r9
+    mov %r9, 24(%rax)
+    movq 32(%r8), %rsi
+    movq 32(%rax), %r8
+    movq 8(%r8), %rdx
+    sal $5, %rdx//this is the
+    call memcpy@PLT
+    mov matrixstart(%rip), %rax
     ret
 
 freematrix://frees the memory of matrix %rdi, no return value
     mov %rdi, matrixstart(%rip)
     movq (%rdi), %rdi
     call free@PLT//array freed
+    movq matrixstart(%rip), %rdi
+    mov 32(%rdi), %rdi
+    call free@PLT
     movq matrixstart(%rip), %rdi
     call free@PLT//pseudo-struct freed
     ret

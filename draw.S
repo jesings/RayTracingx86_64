@@ -1,9 +1,9 @@
 .global draw
 .global edgem
 .global trim
+.global spherem
 .global name
 .global parsefd
-.global zbuffer
 .global half
 .global data
 .global minval
@@ -22,35 +22,36 @@
     .align 32
     delay: .asciz "-delay"
     .align 32
-    delaytime: .asciz "1.7"
+    delaytime: .asciz "3"
     .align 32
     execpath: .quad 0,0,0
     animationlp: .zero 4096
 .bss
     .align 32
     data: .zero 1048576
-    zbuffer: .zero 2097152
     .align 32
     edgem: .quad 0
     drawm: .quad 0
     trim: .quad 0
+    spherem: .quad 0
     parsefd: .quad 0
 .text
 draw:
-    lea zbuffer(%rip), %rdi
-    mov minval(%rip), %rax
-    mov $262144, %rcx
-    rep stosq//fill zbuffer with -infinity double
 
     mov $10, %rdi
     mov $4, %rsi
     call makematrix
     mov %rax, edgem(%rip)//make tiny dummy edge matrix
 
-    mov $4096, %rdi
+    mov $8192, %rdi
     mov $4, %rsi
     call makematrix
     mov %rax, trim(%rip)//make tiny dummy trimatrix
+
+    mov $8192, %rdi
+    mov $4, %rsi
+    call makematrix
+    mov %rax, spherem(%rip)//make tiny dummy spherematrix
 
     mov $4, %rdi
     mov $4, %rsi
@@ -125,10 +126,6 @@ draw:
     mov %dl, (%rdi, %rax)
     mov %cl, 1(%rdi, %rax)
     call saveit
-    lea zbuffer(%rip), %rdi
-    mov minval(%rip), %rax
-    mov $262144, %rcx
-    rep stosq
     lea data(%rip), %rdi
     xor %rax, %rax
     mov $131072, %rcx
@@ -137,6 +134,8 @@ draw:
     mov edgem(%rip), %rsi
     movq $0, 24(%rdi)
     movq $0, 24(%rsi)
+    mov spherem(%rip), %rdi
+    movq $0, 24(%rdi)
     call cspop
     pop %rcx
     inc %rcx
@@ -228,6 +227,9 @@ draw:
 
     mov trim(%rip), %rdi
     call freematrix//free trimatrix
+
+    mov spherem(%rip), %rdi
+    call freematrix
     csstackstill:
     call cspop//free last item on coordinate stack
     cmpq $0, cstop(%rip)

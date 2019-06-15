@@ -35,8 +35,8 @@ crossproduct://points packed in ymm0, ymm1
     vpermq $0b11010010, %ymm1, %ymm3
     vmulpd %ymm2, %ymm3, %ymm2
     vpermq $0b11010010, %ymm0, %ymm3
-    vpermq $0b11001001, %ymm1, %ymm4
-    vmulpd %ymm3, %ymm4, %ymm3
+    vpermq $0b11001001, %ymm1, %ymm1
+    vmulpd %ymm3, %ymm1, %ymm3
     vsubpd %ymm3, %ymm2, %ymm0
     ret
 dotproduct://stuff in ymm0, ymm1
@@ -91,86 +91,4 @@ cos2:
     cmp $0,%rdi
     cmovl %rax, %rdi
     vmovsd (%rsi,%rdi,8),%xmm0
-    ret
-.macro broadcastdotproduct arg1, arg2, result
-    sub $64, %rsp
-    vmovupd %ymm0, (%rsp)
-    vmovupd %ymm1, 32(%rsp)
-    vmovupd \arg1, %ymm0
-    vmovupd \arg2, %ymm1
-
-    vmulpd %ymm0, %ymm1, %ymm0
-    vextractf128 $1, %ymm0, %xmm1
-    vaddpd %ymm0, %ymm1, %ymm0
-    vunpckhpd %xmm0, %xmm0, %xmm1
-    vaddsd %xmm1, %xmm0, %xmm0
-    
-    vpbroadcastq %xmm0, %ymm0
-    vmovupd %ymm0, \result
-    vmovupd 32(%rsp), %ymm1
-    vmovupd (%rsp), %ymm0
-    add $64, %rsp
-.endm
-.macro clamp regname
-    mov $0xff, %rdi
-    cmpq $0xff, %r\regname
-    cmovg %rdi, %r\regname
-    xor %rdi, %rdi
-    cmpq $0, %r\regname
-    cmovl %rdi, %r\regname
-.endm
-diffuse:
-    vmulpd %ymm4, %ymm1, %ymm1
-    broadcastdotproduct %ymm3, surfacenormal(%rip), %ymm5
-    vmulpd %ymm1, %ymm5, %ymm1
-    ret
-specular:
-    vmulpd %ymm4, %ymm2, %ymm2
-    vmulpd twos(%rip), %ymm5, %ymm5
-    vmulpd surfacenormal(%rip), %ymm5, %ymm5
-    vsubpd %ymm3, %ymm5, %ymm5
-    broadcastdotproduct viewvector(%rip), %ymm5, %ymm5
-    vcmppd $0x1D, zeros(%rip), %ymm5, %ymm6
-    vandnpd %ymm5, %ymm6, %ymm5
-    vmulpd %ymm5, %ymm5, %ymm5
-    vmulpd %ymm5, %ymm5, %ymm5
-    vmulpd %ymm5, %ymm2, %ymm2
-    ret
-setcolor://color packed in ymm0
-    vcvtsd2si %xmm0, %rax
-    vpermq $0b1001, %ymm0, %ymm0
-    vcvtsd2si %xmm0, %rcx
-    vpermq $0b01, %ymm0, %ymm0
-    vcvtsd2si %xmm0, %rdx
-    sub $8, %rsp
-    movq $0, (%rsp)
-    clamp ax
-    clamp cx
-    clamp dx
-    mov %ax, (%rsp)
-    mov %cx, 1(%rsp)
-    mov %dx, 2(%rsp)
-    mov (%rsp), %r15
-    add $8, %rsp
-    ret
-illumination://Ka, Kd, Ks are in xmm 0, 1, 2, vector of light is in xmm3, color of light is in xmm4
-    //Calculate ambient light
-    sub $64, %rsp
-    vmovupd %ymm0, (%rsp)
-    vmovupd %ymm1, 32(%rsp)
-    vmovupd %ymm3, %ymm0
-    call normalize
-    vmovupd %ymm0, %ymm3
-    vmovupd (%rsp), %ymm0
-    vmovupd 32(%rsp), %ymm1
-    add $64, %rsp
-    vmovupd ambient(%rip), %ymm5
-    vmulpd %ymm5, %ymm0, %ymm0//this is the ambient light
-    call diffuse
-    call specular
-    vcmppd $0x1D, zeros(%rip), %ymm1, %ymm6
-    vandpd %ymm1, %ymm6, %ymm1
-    vaddpd %ymm0, %ymm1, %ymm0
-    vaddpd %ymm0, %ymm2, %ymm0
-    call setcolor
     ret

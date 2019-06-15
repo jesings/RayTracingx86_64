@@ -5,11 +5,19 @@
 .global genmanipulate
 .global dilate
 .global transform
+.global matrixbookmark
+.global scalefactor
 .data
+    .align 32
+scalefactor:
+    .double 1, 1, 1, 0
 .bss
     .align 32
 _matrixstart:
     .quad 0
+matrixbookmark:
+    .quad 0
+    .align 32
 .text
 genmanipulate://performs an manipulation (either scaling or translation) specified in rax to matrix specified in rdi
     push %r12
@@ -42,6 +50,14 @@ genmanipulate://performs an manipulation (either scaling or translation) specifi
     pop %r12
     ret
 dilate://takes 3 params, x,y,z dilation in %xmm0-2, takes matrix in %rdi
+    lea scalefactor(%rip), %r8
+    vmulsd (%r8),%xmm0, %xmm4
+    vmovsd %xmm4, (%r8)
+    vmulsd 8(%r8),%xmm1, %xmm4
+    vmovsd %xmm4, 8(%r8)
+    vmulsd 16(%r8),%xmm2, %xmm4
+    vmovsd %xmm4, 16(%r8)
+
     movsd %xmm0, (%rdi)
     movsd %xmm1, 40(%rdi)
     movsd %xmm2, 80(%rdi)
