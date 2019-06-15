@@ -114,7 +114,11 @@ addsphere:
     mov (%rdi), %rsi
     shl $5, %rdx
     mov 32(%rdi), %rcx
-    vmulsd scalefactor(%rip), %xmm3, %xmm3
+    push %rdi
+    cspeek
+    mov 32(%rdi), %r8
+    vmulsd (%r8), %xmm3, %xmm3
+    pop %rdi
     vmovq %xmm3, (%rcx,%rdx)
 
     vmovsd %xmm0, (%rsi, %rdx)

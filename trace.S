@@ -317,7 +317,7 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
 
     vmovupd Ka(%rip), %ymm0
     vmovupd refractivity(%rip), %ymm8
-    vsubpd  %ymm7, %ymm1, %ymm1
+    vsubpd  %ymm8, %ymm7, %ymm1
 
     vmulpd %ymm0, %ymm6, %ymm0//ambient light done
 

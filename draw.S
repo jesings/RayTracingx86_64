@@ -26,6 +26,7 @@
     .align 32
     execpath: .quad 0,0,0
     animationlp: .zero 4096
+    basefactor: .double 1, 1, 1, 0
 .bss
     .align 32
     data: .zero 1048576
@@ -57,6 +58,9 @@ draw:
     mov $4, %rsi
     call makematrix
     push %rax
+    mov 32(%rax), %rcx
+    vmovupd basefactor(%rip), %ymm0
+    vmovupd %ymm0, (%rcx)
     mov %rax, %rdi
     call identitymatrix//make identity coordinate stack matrix
     mov $16, %rdi

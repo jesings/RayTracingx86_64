@@ -2,7 +2,7 @@ executable = 3d
 allfiles=matrix.o draw.o edgy.o prgrid.o manipulations.o parametric.o polygon.o polyhedra.o math.o stack.o sintable.o compiler.o lex.yy.c y.tab.c trace.o
 
 all: compile
-	./$(executable) main.mdl
+	./$(executable) face.mdl
 	-rm *.ppm 2> /dev/null
 
 oops: compile

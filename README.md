@@ -8,6 +8,6 @@ Initial goal:
 
 Ray Tracing --> Starting out super basic, just triangle plane intersection, using Phong reflection to handle different kinds of light, potentially switching over to Blinn-Phong, the base version will be significantly optimized, as is borderline-necessary for applications like these.
 
-Added shadow rays
+Added semi-functional shadow rays
 
-Semi-functional sphere intersection
+Sphere intersection

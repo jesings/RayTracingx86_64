@@ -115,9 +115,9 @@ copymatrix://makes a deepcopy of matrix %rdi, returns the pointer to that new ma
     pop %rax
     mov 24(%r8), %r9
     mov %r9, 24(%rax)
-    movq 32(%r8), %rsi
-    movq 32(%rax), %r8
-    movq 8(%r8), %rdx
+    mov 32(%r8), %rsi
+    mov 32(%rax), %rdi
+    mov 8(%r8), %rdx
     sal $5, %rdx//this is the
     call memcpy@PLT
     mov matrixstart(%rip), %rax

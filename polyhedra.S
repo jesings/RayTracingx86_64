@@ -331,8 +331,9 @@ maketorus://matrix-ifies the tris for a torus
     pop %r15
     ret
 makesphere://matrix-ifies the tris for a sphere
-    jmp parameterize
-    lea scalefactor(%rip), %r8
+    mov cstop(%rip), %rdi
+    mov (%rdi), %rdi
+    mov 32(%rdi), %r8
     movsd (%r8), %xmm5
     movsd 8(%r8), %xmm6
     movsd 16(%r8), %xmm7

@@ -188,6 +188,13 @@ handleop://raxth element of symtab
     vmulsd 16(%rdi), %xmm3, %xmm1
     vmulsd 24(%rdi), %xmm3, %xmm2
     cspeek
+    mov 32(%rdi), %r8
+    vmulsd (%r8),%xmm0, %xmm4
+    vmovsd %xmm4, (%r8)
+    vmulsd 8(%r8),%xmm1, %xmm4
+    vmovsd %xmm4, 8(%r8)
+    vmulsd 16(%r8),%xmm2, %xmm4
+    vmovsd %xmm4, 16(%r8)
     lea dilate(%rip), %rax
     call genmanipulate
     ret
