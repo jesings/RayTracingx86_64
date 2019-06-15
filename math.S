@@ -24,7 +24,6 @@
     twentyfour: .double 24.0
     onetwenty: .double 120.0
     eightyoneninetytwo: .double 8192
-    viewvector: .double 0,0,1,0
     sinarg: .double 0
     cosarg: .double 0
     mask: .quad 0xffffffffffffffff,0xffffffffffffffff,0xffffffffffffffff,0

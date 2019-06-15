@@ -2,7 +2,6 @@
 .global surfacenormal
 .global lightloc
 .global lightcolor
-.global viewvect
 .global Ka
 .global Kad
 .global reflectivity
@@ -13,14 +12,13 @@
 
 .data
     .align 32
-    viewvect: .double 0, 0, 1, 0
     Ka: .double .1, .1, .1, 0
     reflectivity: .double .375, .375, .375, 0
     refractivity: .double 0, 0, 0, 0
     Kad: .double .1, .1, .1, 0
     refractivityd: .double 0, 0, 0, 0
     reflectivityd: .double .375, .375, .375, 0
-    lightloc: .double 0, 1, 0, 0
+    lightloc: .double 1, 1, 1, 0
     lightcolor: .double 200, 200, 200, 0
     surfacenormal: .double 0, 0, 0, 0
     lastone: .double 0, 0, 0, 1

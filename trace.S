@@ -287,7 +287,6 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
     vmovupd 224(%rsp), %ymm8
     test %rax, %rax
     jnz inshadow//should just skip to next light source
-    add $8, %rsp
 
     vmovupd (%r12), %ymm0
     vmovupd %ymm0, Ka(%rip)
@@ -382,22 +381,28 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
     mov %rbp, %rsp
     pop %rbp
     ret
- shadow_ray:
+shadow_ray:
     push %rbp
     mov %rsp, %rbp
+    dec %rdx
 
     vmovupd %ymm0, %ymm10
     vmovupd %ymm1, %ymm11
+    vmovupd %ymm2, %ymm6
+    vmovupd %ymm11, %ymm0
+    call normalize
+    vmovupd %ymm0, %ymm11
     mov trim(%rip), %r10
+    mov 32(%r10), %rcx
     mov 24(%r10), %r11
     mov %r11, %r13
     mov (%r10), %r10
     sal $5, %r11//okay this is the byte length of the list
     add %r11, %r10//end of list here
+    add %r11, %rcx
     neg %r11
 
     sub $256, %rsp
-
     vpcmpeqw %ymm7, %ymm7, %ymm7
     vpsllq $54, %ymm7, %ymm7
     vpsrlq $2, %ymm7, %ymm7
@@ -423,8 +428,10 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
     dotprod
     vmovupd %ymm0, %ymm12//determinant in ymm12
     vcomisd tolerance(%rip), %xmm0
-    jb no_intersect//cull backfaces and near-0 determinant values
+    jb no_add_ray_shadow//cull backfaces and near-0 determinant values
+
     vdivsd %xmm12, %xmm7, %xmm13//inverse determinant in  xmm13
+
     vsubpd 64(%rsp), %ymm10, %ymm5//tvec in ymm5
     vmovupd %ymm15, %ymm0
     vmovupd %ymm5, %ymm1
@@ -432,9 +439,9 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
     vmulsd %xmm13, %xmm0, %xmm14//u in xmm14
 
     vcomisd zeros(%rip), %xmm14
-    jna no_intersect
+    jna no_add_ray_shadow
     vcomisd %xmm7, %xmm14
-    jnb no_intersect//cull no-intersect from u
+    jnb no_add_ray_shadow//cull no-intersect from u
 
     vmovupd %ymm5, %ymm0
     vmovupd (%rsp), %ymm1
@@ -446,35 +453,31 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
     vmulsd %xmm0, %xmm13, %xmm15//v in in xmm15
 
     vcomisd zeros(%rip), %xmm15
-    jna no_intersect
+    jna no_add_ray_shadow
     vaddsd %xmm14, %xmm15, %xmm0
     vcomisd %xmm7, %xmm0
-    jnb no_intersect//cull no-intersect from v, v+u
+    jnb no_add_ray_shadow//cull no-intersect from v, v+u
 
-    yes_intersect:
     mov %rbp, %rsp
     pop %rbp
     mov $1, %rax
     ret
 
-    no_intersect:
+    no_add_ray_shadow:
     add $96, %r11
     js each_tri_shadow
-
     notris_shadow:
+
     mov spherem(%rip), %r10
     mov 32(%r10), %rcx
     mov 24(%r10), %r11
-    mov %r11, %r13
     test %r11, %r11
-    jz no_spheres_shadow
+    jz nospheres_shadow
     mov (%r10), %r10
     sal $5, %r11//okay this is the byte length of the list
     add %r11, %r10//end of list here
     add %r11, %rcx
     neg %r11
-    test %r13, %r13
-    jz no_spheres_shadow
     each_sphere_shadow:
     vmovupd mask(%rip), %ymm3
     vandpd (%r10,%r11), %ymm3, %ymm5//ymm5 is center
@@ -495,7 +498,6 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
     vsubsd %xmm14, %xmm0, %xmm14//d2 in xmm14
     vcomisd %xmm3, %xmm14
     ja no_circle_ray_shadow
-
     vsubsd %xmm14, %xmm3, %xmm2
     vsqrtsd %xmm2, %xmm2, %xmm2
     vsubsd %xmm2, %xmm13, %xmm4
@@ -504,17 +506,20 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
     vmaxsd %xmm4, %xmm2, %xmm1
 
     vcomisd zeros(%rip), %xmm0
-    ja goodjob
+    ja goodjob_shadow
     vcomisd zeros(%rip), %xmm1
-    jb no_circle_ray
-    
-    jmp yes_intersect
+    jb no_circle_ray_shadow
+    goodjob_shadow:
+    mov %rbp, %rsp
+    pop %rbp
+    mov $1, %rax
+    ret
+
     no_circle_ray_shadow:
     add $32, %r11
     js each_sphere_shadow
-
-    no_spheres_shadow:
+    nospheres_shadow:
     mov %rbp, %rsp
     pop %rbp
-    mov $0, %rax
+    xor %rax, %rax
     ret
