@@ -5,6 +5,7 @@ constants shiny_red 0.3 0.2 0.2 0.1 0 .8 0.1 0.2 .8
 constants shiny_blue 0.1 0.2 0.8 0.1 0 1 0.3 0.2 .2
 constants shiny_teal 0.3 0.0 1 0.3 0.2 .2 0.3 0.2 .2
 constants dull_yellow 0.3 0.8 .8 0.3 0.8 .8 0 0 1
+constants dull_grey 0.1 0 1 0.1 0 1 0.1 0 1
 constants white 0.3 0.1 .5 0.3 0.1 .5 0.3 .1 .5
 push
 move 256 256 0

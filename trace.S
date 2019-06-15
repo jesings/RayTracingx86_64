@@ -274,7 +274,7 @@ calc_ray://ray origin packed in ymm0, NORMALIZED ray vector packed in ymm1, ligh
     vmulpd %ymm9, %ymm8, %ymm8
     vaddpd %ymm8, %ymm10, %ymm10
     vmovupd lightloc(%rip), %ymm1
-    vxorpd zeros(%rip), %ymm1, %ymm1
+    //vxorpd zeros(%rip), %ymm1, %ymm1
     vmulpd directionupdate(%rip), %ymm1, %ymm0
     vaddpd %ymm0, %ymm10, %ymm0
     push %r12
