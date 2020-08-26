@@ -99,9 +99,8 @@ draw:
     lea basename(%rip), %rdi
     call mstrlen
     mov %rax, bnlen(%rip)
-    movl $0x30302E70, (%rdi, %rax)
-    movw $0x706d, 4(%rdi, %rax)
-
+    movl $0x702E3030, (%rdi, %rax)
+    movw $0x6D70, 4(%rdi, %rax)
     xor %rcx, %rcx
     frameloop:
     push %rcx
@@ -157,8 +156,7 @@ draw:
 
     lea basename(%rip), %rdi
     mov bnlen(%rip), %rax
-    movb $0x2a, (%rdi, %rax)
-    movb $0x0, 1(%rdi, %rax)
+    movw $0x02a, (%rdi, %rax)
     sub $32, %rsp
     xor %rsi, %rsi
     xor %rdx, %rdx
@@ -167,7 +165,8 @@ draw:
 
     lea basename(%rip), %rdi
     mov bnlen(%rip), %rax
-    movl $0x2E676966, 0(%rdi, %rax)
+    movl $0x6669672E, 0(%rdi, %rax)
+
     movb $0x00, 4(%rdi, %rax)
 
     mov (%rsp),%rcx
