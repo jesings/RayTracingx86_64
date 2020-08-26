@@ -144,7 +144,7 @@ addsphere:
     sub $24, %rsp
     push %rdx
     mov $96, %rdi
-    call malloc@PLT
+    call alloc@PLT
     pop %rdx
     add $24, %rsp
     mov spherem(%rip), %rdi

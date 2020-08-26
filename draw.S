@@ -38,6 +38,7 @@
     parsefd: .quad 0
 .text
 draw:
+    call initheap
 
     mov $10, %rdi
     mov $4, %rsi
@@ -64,7 +65,7 @@ draw:
     mov %rax, %rdi
     call identitymatrix//make identity coordinate stack matrix
     mov $16, %rdi
-    call malloc@PLT
+    call alloc@PLT
     mov %rax, cstop(%rip)
     pop %rdi
     mov %rdi, (%rax)
@@ -98,12 +99,8 @@ draw:
     lea basename(%rip), %rdi
     call mstrlen
     mov %rax, bnlen(%rip)
-    movb $0x30, (%rdi, %rax)
-    movb $0x30, 1(%rdi, %rax)
-    movb $0x2E, 2(%rdi, %rax)
-    movb $0x70, 3(%rdi, %rax)
-    movb $0x70, 4(%rdi, %rax)
-    movb $0x6d, 5(%rdi, %rax)
+    movl $0x30302E70, (%rdi, %rax)
+    movw $0x706d, 4(%rdi, %rax)
 
     xor %rcx, %rcx
     frameloop:
@@ -170,10 +167,7 @@ draw:
 
     lea basename(%rip), %rdi
     mov bnlen(%rip), %rax
-    movb $0x2E, 0(%rdi, %rax)
-    movb $0x67, 1(%rdi, %rax)
-    movb $0x69, 2(%rdi, %rax)
-    movb $0x66, 3(%rdi, %rax)
+    movl $0x2E676966, 0(%rdi, %rax)
     movb $0x00, 4(%rdi, %rax)
 
     mov (%rsp),%rcx
@@ -240,4 +234,5 @@ draw:
     jne csstackstill
     call free_temps
     endfrills:
+    call deinitheap
     ret

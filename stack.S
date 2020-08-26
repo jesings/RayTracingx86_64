@@ -7,7 +7,7 @@
 .text
 cspush://push to coordinate system stack
     mov $16, %rdi
-    call malloc@PLT
+    call alloc
     push %rax
     mov cstop(%rip), %rax
     mov (%rax),%rdi
@@ -26,5 +26,5 @@ cspop://pop from coordinate system stack
     mov cstop(%rip), %rdi
     mov 8(%rdi), %rsi
     mov %rsi, cstop(%rip)
-    call free@PLT
+    call afree@PLT
     ret

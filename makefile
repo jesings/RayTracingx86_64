@@ -1,5 +1,5 @@
 executable = 3d
-allfiles=matrix.o draw.o edgy.o prgrid.o manipulations.o parametric.o polygon.o polyhedra.o math.o stack.o sintable.o compiler.o lex.yy.c y.tab.c trace.o
+allfiles=matrix.o draw.o edgy.o prgrid.o manipulations.o parametric.o polygon.o polyhedra.o math.o stack.o sintable.o compiler.o lex.yy.c y.tab.c trace.o heapman.o
 
 all: compile
 	./$(executable) face.mdl
@@ -44,6 +44,8 @@ compiler.o: compiler.S
 	gcc -c -g compiler.S
 trace.o: trace.S
 	gcc -c -g trace.S
+heapman.o: heapman.S
+	gcc -c -g heapman.S
 clean:
 	-rm *.png *.gif *.jpg *.ppm 2> /dev/null
 	-rm y.tab.c y.tab.h 2> /dev/null
